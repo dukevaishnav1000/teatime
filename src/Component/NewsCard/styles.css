@@ -1,0 +1,58 @@
+.card{
+    margin-left:0;
+    margin-right:0;
+    padding:0;
+}
+.card{
+max-height:44vh;
+max-width:auto;
+min-height:44vh;
+width:100%;
+height: auto;
+border-radius: 10px;
+border:1px solid black;
+overflow: hidden;
+/* opacity:1;
+filter:brightness(90%); */
+} 
+
+.card img{
+width:auto;
+height:33vh;
+margin:0;
+padding-bottom: 0;
+/* border:2px solid purple; */
+}
+
+.card-body
+{   
+    margin:0;
+    padding-top: 1px;
+    width:100%;
+    /* border:2px solid brown;  */
+}
+
+
+.card-body h4{
+text-align:justify;
+text-decoration: underline;
+color:black; 
+height:calc(10vh);
+
+text-overflow:ellipsis;
+margin:0;
+font-size:1rem;
+
+}
+
+.card-title a{
+    color:black;
+
+
+
+}
+
+
+.card-body p{
+    font-size: smaller;
+}

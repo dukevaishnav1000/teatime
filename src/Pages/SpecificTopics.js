@@ -1,37 +1,254 @@
 import './style.css';
 import Navbar from '../Component/Navbar/Navbar';
 import React from 'react';
+import NewsCard from '../Component/NewsCard/NewsCard';
 
-class SpecificTopics extends React.Component{
 
-randomImage=()=>{
-    let arr=["images\\deerImage_alt.png","images\\rabbitImage_alt.webp","images\\puppiesImage_alt.jpg","images\\cuteRabbitImage_alt.jpg"]
-    return arr[Math.floor(Math.random(0,1)*4)];
 
-}
+var news_pointer=-1;
+var news_articles=[];
 
-render(){
-    return(<div>
-        <Navbar/>
-        <div className="news-container container-fluid ">
-            <div className="loaderHolder"><div className="loader"></div></div>            
-            <div className="row m-2">
-                <div className="col col-md-4 col-sm-6 col-12 m-0 mt-3">
-                    <div className="card bg-dark text-white ">
-                        <img src="./tiger.jpg" className="card-img" alt="" onError={this.randomImage}/>
-                        <div className="hider"></div>
-                        <div className="card-img-overlay">   
-                            <h4 className="card-title mt"><a href="" target="_blank"></a></h4>
-                            <p className="card-text">Last updated 3 mins ago</p>
-                        </div>
-                    </div>
+class HomePage extends React.Component{
+
+    constructor(props){
+        super(props);
+        this.state={newsCardArray:[],loader:"block",scrolly:window.scrollY}
+    }
+    observer=new IntersectionObserver(entries=>{
+        let entry=entries[0];
+            console.log("i am called");
+            if(entry.isIntersecting)
+            {       
+                    console.log("body is "+document.getElementsByTagName("body"))
+                    this.makeCards(this)();
+            }
+            
+        }) 
+
+    makeCards()
+    {   
+        this.setState({scrolly:window.scrollY,loader:"block"})
+        document.body.style.overflow="hidden";
+        if(news_pointer+21<news_articles.length){
+            let temp=news_pointer;
+            this.setState(prev=>{return {newsCardArray:[...prev.newsCardArray,...news_articles.slice(temp+1,temp+22).map(article=>{
+                console.log("first if called --- news_pointer ",++news_pointer);
+                return <NewsCard title={article.title} urlToImage={article.urlToImage} urlToArticle={article.url} publishedAt={article.publishedAt} key={news_pointer} news_pointer={news_pointer}/>
+            })]}})
+        //     newsCardArray.push(...news_articles.slice(temp+1,temp+22).map(article=>{
+        //     console.log("first if called --- news_pointer ",++news_pointer);
+        //     return <NewsCard title={article.title} urlToImage={article.urlToImage} urlToArticle={article.url} publishedAt={article.publishedAt} key={news_pointer} news_pointer={news_pointer}/>
+        // }))
+        }
+        else
+        if(news_pointer<news_articles.length)
+        {   let temp=news_pointer;
+            var eodflag=1;
+            this.setState(prev=>{
+               return {newsCardArray:[...prev.newsCardArray,...news_articles.slice(temp+1,news_articles.length).map(article=>{
+                console.log("second if called --- news_pointer ",++news_pointer);
+                return <NewsCard title={article.title} urlToImage={article.urlToImage} urlToArticle={article.url} publishedAt={article.publishedAt} key={news_pointer}/>
+                })]}
+            })
+            this.observer.unobserve(document.getElementsByClassName("endOfResults")[0]);
+            // newsCardArray.push();
+        }   
+        
+        console.log(this.state.newsCardArray);
+       setTimeout(()=>{
+        // document.getElementsByTagName("body").style.overflowY="scroll";
+        console.log("body is "+document.getElementsByTagName("body")[0])
+        this.setState({loader:"none"})
+        document.body.style.overflow="visible";
+        if(eodflag==1)
+        {
+        document.getElementsByClassName("endOfResults")[0].style.opacity="1";    
+        }
+    },1700);     
+    }
+
+    render(){
+        // this.loadImage.bind(this)();
+        console.log(document.getElementsByClassName("endOfResults"));
+        
+        return(
+        <div>
+            <Navbar/>
+            <div className="news-container container-fluid ">
+                <div className="loaderHolder" id="loaderHolder" style={{display:this.state.loader,top:window.scrollY}}><div className="loader"></div>
+                </div>                
+                <div className="row m-1" >
+                {   
+                    this.state.newsCardArray
+
+                }
                 </div>  
+                <div className="endContainer">
+                <p className="endOfResults"><a href="#navbarcomp">Go to top ↑</a></p>
+                </div>     
             </div>
-            <p className="endOfResults">That's All Folks !!</p>
         </div>
-    </div>)
-}
+        )
+    }
+
+    componentDidMount(){
+        console.log("ComponentDidMount called");
+        this.fetchHomeData.bind(this)();     
+    }
+
+    fetchHomeData(){
+        //new data will be fetched if 
+        console.log("fetchHomeData called");
+        console.log(window.location.pathname)
+        
+        switch (window.location.pathname) {
+            case "/Entertainment":
+                        //us,in,uk,cn,ru,jp,au
+                        fetch(`https://api.allorigins.win/get?url=${encodeURIComponent("https://newsapi.org/v2/everything?q=entertainment&pageSize=40&apiKey=ca7e73b85d284f8094f30683304ad991")}`)
+                        .then((res)=>{
+                        return res.json();             
+                       },rej=>{
+                           console.log("Error while feching: ",rej)
+                       }).then(data=>{
+                                news_articles.push(...JSON.parse(data.contents).articles);
+                                    console.log(news_articles);
+                                    
+                        }).then((data)=>{
+                         setTimeout(()=>{this.observer.observe(document.getElementsByClassName("endOfResults")[0]);
+                         this.makeCards.bind(this)();
+                        },2000);
+                        })
+                                
+                    break;
+            case "/Technology":
+                    
+  
+                        //us,in,uk,cn,ru,jp,au
+                        fetch(`https://api.allorigins.win/get?url=${encodeURIComponent("https://newsapi.org/v2/everything?q=technology&pageSize=40&apiKey=ca7e73b85d284f8094f30683304ad991")}`).then((res)=>{
+                        return res.json();             
+                       },rej=>{
+                           console.log("Error while feching: ",rej)
+                       }).then(data=>{
+                                news_articles.push(...JSON.parse(data.contents).articles);
+                                    console.log(news_articles);
+                                    
+                        }).then((data)=>{
+                         setTimeout(()=>{this.observer.observe(document.getElementsByClassName("endOfResults")[0]);
+                         this.makeCards.bind(this)();
+                        },2000);
+                        })
+                             
+                    break;
+            case "/Sports":
+                    
+                       
+                        //us,in,uk,cn,ru,jp,au
+                        fetch(`https://api.allorigins.win/get?url=${encodeURIComponent("https://newsapi.org/v2/everything?q=sports&pageSize=40&apiKey=ca7e73b85d284f8094f30683304ad991")}`).then((res)=>{
+                        return res.json();             
+                       },rej=>{
+                           console.log("Error while feching: ",rej)
+                       }).then(data=>{
+                                news_articles.push(...JSON.parse(data.contents).articles);
+                                    console.log(news_articles);
+                                    
+                        }).then((data)=>{
+                         setTimeout(()=>{this.observer.observe(document.getElementsByClassName("endOfResults")[0]);
+                         this.makeCards.bind(this)();
+                        },2000);
+                        })
+                                
+                    break;
+            case "/Politics":                       
+                        //us,in,uk,cn,ru,jp,au
+                        fetch(`https://api.allorigins.win/get?url=${encodeURIComponent("https://newsapi.org/v2/everything?q=Politics&pageSize=40&apiKey=ca7e73b85d284f8094f30683304ad991")}`).then((res)=>{
+                        return res.json();             
+                       },rej=>{
+                           console.log("Error while feching: ",rej)
+                       }).then(data=>{
+                                news_articles.push(...JSON.parse(data.contents).articles);
+                                    console.log(news_articles);
+                                    
+                        }).then((data)=>{
+                         setTimeout(()=>{this.observer.observe(document.getElementsByClassName("endOfResults")[0]);
+                         this.makeCards.bind(this)();
+                        },2000);
+                        })
+                                
+                    break;
+            case "/Travel":                       
+                    //us,in,uk,cn,ru,jp,au
+                    fetch(`https://api.allorigins.win/get?url=${encodeURIComponent("https://newsapi.org/v2/everything?q=travel&pageSize=40&apiKey=ca7e73b85d284f8094f30683304ad991")}`).then((res)=>{
+                    return res.json();             
+                   },rej=>{
+                       console.log("Error while feching: ",rej)
+                   }).then(data=>{
+                            news_articles.push(...JSON.parse(data.contents).articles);
+                                console.log(news_articles);
+                                
+                    }).then((data)=>{
+                     setTimeout(()=>{this.observer.observe(document.getElementsByClassName("endOfResults")[0]);
+                     this.makeCards.bind(this)();
+                    },2000);
+                    })
+                            
+                break;
+                case "/Business":                       
+                //us,in,uk,cn,ru,jp,au
+                fetch(`https://api.allorigins.win/get?url=${encodeURIComponent("https://newsapi.org/v2/everything?q=business&pageSize=40&apiKey=ca7e73b85d284f8094f30683304ad991")}`).then((res)=>{
+                return res.json();             
+               },rej=>{
+                   console.log("Error while feching: ",rej)
+               }).then(data=>{
+                        news_articles.push(...JSON.parse(data.contents).articles);
+                            console.log(news_articles);
+                            
+                }).then((data)=>{
+                 setTimeout(()=>{this.observer.observe(document.getElementsByClassName("endOfResults")[0]);
+                 this.makeCards.bind(this)();
+                },2000);
+                })
+                        
+            break;
+            case "/Food":                       
+                        //us,in,uk,cn,ru,jp,au
+                        fetch(`https://api.allorigins.win/get?url=${encodeURIComponent("https://newsapi.org/v2/everything?q=food&pageSize=40&apiKey=ca7e73b85d284f8094f30683304ad991")}`).then((res)=>{
+                        return res.json();             
+                       },rej=>{
+                           console.log("Error while feching: ",rej)
+                       }).then(data=>{
+                                news_articles.push(...JSON.parse(data.contents).articles);
+                                    console.log(news_articles);
+                                    
+                        }).then((data)=>{
+                         setTimeout(()=>{this.observer.observe(document.getElementsByClassName("endOfResults")[0]);
+                         this.makeCards.bind(this)();
+                        },2000);
+                        })
+                                
+                    break;
+            case "/Beauty":                       
+                    //us,in,uk,cn,ru,jp,au
+                    fetch(`https://api.allorigins.win/get?url=${encodeURIComponent("https://newsapi.org/v2/everything?q=beauty&pageSize=40&apiKey=ca7e73b85d284f8094f30683304ad991")}`).then((res)=>{
+                    return res.json();             
+                   },rej=>{
+                       console.log("Error while feching: ",rej)
+                   }).then(data=>{
+                            news_articles.push(...JSON.parse(data.contents).articles);
+                                console.log(news_articles);
+                                
+                    }).then((data)=>{
+                     setTimeout(()=>{this.observer.observe(document.getElementsByClassName("endOfResults")[0]);
+                     this.makeCards.bind(this)();
+                    },2000);
+                    })
+                            
+                break;
+            default:
+                break;
+         }
+        
+    }
     
 }
 
-export default SpecificTopics;
+export default HomePage;

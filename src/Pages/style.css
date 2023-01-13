@@ -8,7 +8,7 @@
  .loaderHolder{
     background-color: #FDFEFF;
     width:100%;
-    height:100vh;
+    height:150vh;
     position: absolute;
     z-index:5;
     opacity:.3;
@@ -35,14 +35,37 @@
             transform: translateY(-10px);}
   }
 
+.endContainer{
+    display: flex;
+    width: 100vw;
+    justify-content: center;
+}
+
 .endOfResults{
-font:Blue 'Roboto Flex' 40px;
+font:'Roboto Flex' 20rem;
+color:white;
 text-align: center;
 font-weight: 600;
-width:100vw;
-height:10vh;
-margin-top:2vh;
-padding-top:3vh;
-display:none;
-background-color: aqua;
+max-width: 25vmax;
+max-height:8vmax;   
+padding:1vh;
+opacity: 0;
+background-color: linear;
+border-radius:20px;
+background: rgb(59,50,249);
+background: linear-gradient(180deg, rgba(59,50,249,1) 0%, rgba(252,70,107,1) 100%);
+cursor: pointer;
+overflow: hidden;
+}
+
+.endOfResults:hover{ 
+    opacity: .6;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+}
+
+.endOfResults a{
+    color:white;
+    text-decoration: none;
+    height:100%;
+    width:100%;
 }

@@ -8,7 +8,7 @@ import NewsCard from '../Component/NewsCard/NewsCard';
 var news_pointer=-1;
 var news_articles=[];
 
-class HomePage extends React.Component{
+class SpecificTopics extends React.Component{
 
     constructor(props){
         super(props);
@@ -251,4 +251,4 @@ class HomePage extends React.Component{
     
 }
 
-export default HomePage;
+export default SpecificTopics;

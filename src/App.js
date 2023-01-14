@@ -1,6 +1,6 @@
 import './App.css';
 import HomePage from './Pages/HomePage';
-import {BrowserRouter,Routes,Route} from 'react-router-dom';
+import {BrowserRouter,Routes,Route, HashRouter} from 'react-router-dom';
 import SpecificTopics from './Pages/SpecificTopics';
 import React from 'react';
 
